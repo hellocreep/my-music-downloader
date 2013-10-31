@@ -5,6 +5,8 @@ import requests
 import re, urllib, urllib2
 import argparse
 
+import dl
+
 import eyed3
 
 VERSION = '0.0.1'
@@ -78,10 +80,7 @@ def get_song_link(song_id_list):
 	r = requests.post(URL_PATTERN_SONG, params=SONG_POST_PARAM, headers=HEADERS)
 	return r.json()
 
-def download_cover(cover_link):
-	return None
-
-def download_song(song_link_list, folder, album_cover):
+def download_song(song_link_list, folder):
 	for s in song_link_list['data']['songList']:
 		if s['linkinfo'].has_key('320'):
 			link = s['linkinfo']['320']['songLink']
@@ -97,36 +96,48 @@ def download_song(song_link_list, folder, album_cover):
 			'track_num': song_link_list['data']['songList'].index(s)
 		}
 		output_file = os.path.join(folder, filename+'.mp3')
-		request = urllib2.Request(link)
-		request.add_header('User-Agent', HEADERS['User-Agent'])
-		response = urllib2.urlopen(request)
+		# request = urllib2.Request(link)
+		# request.add_header('User-Agent', HEADERS['User-Agent'])
+		# response = urllib2.urlopen(request)
+		r = requests.get(link, headers=HEADERS, stream=True)
+		r.encoding = 'utf-8'
 		with open(output_file, 'wb') as output:
-			output.write(response.read())
+			for chunk in r.iter_content(1024):
+				if not chunk:
+					break
+				output.write(chunk)
 		set_song_info(output_file, info)
 		print '------------------------complete--------------------'
 		
 def get_song_list(album_id):
 	ALBUM_GET_PARAM['albumId'] = album_id
 	r = requests.get(URL_PATTERN_ALBUM, params=ALBUM_GET_PARAM, headers=HEADERS)
-	make_folder(r.json()['data']['albumName'])
+	dl.make_folder(r.json()['data']['albumName'])
 	return r.json()['data']
 
-def make_folder(name):
-	folder = os.path.join(os.getcwd(), DEST, name);
-	if not os.path.exists(folder):
-		os.makedirs(folder)
-	return folder
+# def make_folder(name):
+# 	folder = os.path.join(os.getcwd(), DEST, name);
+# 	if not os.path.exists(folder):
+# 		os.makedirs(folder)
+# 	return folder
 
-if __name__ == '__main__':
+def search(query):
+	return None
+
+def main():
 	args = parse_arguments()
 
 	if args.album:
 		for a in args.album[0]:
 			data = get_song_list(a)
 			song_list = get_song_link(data['songIdList'])
-			folder = make_folder(data['albumName'])
-			download_song(song_list, folder, data['albumPicSmall'])
+			folder = dl.make_folder(data['albumName'])
+			download_song(song_list, folder)
 	if args.song:
 		for s in args.song:
 			song_list = get_song_link(s)
-			print song_list
+			download_song(song_list, DEST)
+
+if __name__ == '__main__':
+
+	main()
