@@ -6,8 +6,6 @@ import argparse
 
 import dl
 
-import eyed3
-
 VERSION = '0.0.2'
 
 URL_PATTERN_ALBUM = 'http://play.baidu.com/data/music/box/album'

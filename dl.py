@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import os
 import ConfigParser
 import argparse
@@ -25,7 +27,7 @@ def parse_arguments(VERSION):
 	parser = argparse.ArgumentParser(description=note)
 
 	parser.add_argument('-v', '--version', action='version', version=VERSION)
-	parser.add_argument('-a', '--album', action='append',
+	parser.add_argument('-a', '--album',
                         help='adds all songs in the albums for download',
                         type=int, nargs='+')
 	parser.add_argument('-s', '--song',
