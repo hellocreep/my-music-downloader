@@ -91,6 +91,8 @@ def get_song_list(album_id):
 	r = requests.get(URL_PATTERN_ALBUM, params=ALBUM_GET_PARAM, headers=HEADERS)
 	return r.json()['data']
 
+# TODO
+# QUERY 中文参数问题
 def search(query):
 	print query
 	SEARCH_PARAM['word'] = query

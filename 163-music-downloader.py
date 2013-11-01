@@ -92,11 +92,11 @@ def main():
 
 	if args.search:
 		search(' '.join(args.search))
-
+# TODO
+# QUERY 中文参数问题
 def search(query):
 	print query
 	r = requests.post(URL_PATTERN_SEARCH, params={'limit': 20, 's': query}, headers=HEADERS)
-
 	data = r.json()['result']
 	if data.has_key('albums'):
 		print '-------------------------Album----------------------------'
