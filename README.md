@@ -17,7 +17,6 @@ for baidu music and 163 music
 
 ```
 163-music -se keywords
-
 baidu-music -se keywords
 ```
 
@@ -25,7 +24,6 @@ baidu-music -se keywords
 
 ```
 163-music -s songid
-
 baidu-music -s songid
 ```
 
@@ -33,6 +31,5 @@ baidu-music -s songid
 
 ```
 163-music -a albumid
-
 baidu-music -a albumid
 ```
