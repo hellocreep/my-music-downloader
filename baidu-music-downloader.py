@@ -2,7 +2,6 @@
 
 import os
 import requests
-import re, urllib, urllib2
 import argparse
 
 import dl
@@ -50,36 +49,7 @@ HEADERS = {
 	'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'
 }
 
-DEST = dl.DEST
-
-def parse_arguments():
-
-	note = 'The following SONG, ALBUM, and PLAYLIST are IDs which can be' \
-           'obtained from the URL of corresponding web page.'
-
-	parser = argparse.ArgumentParser(description=note)
-
-	parser.add_argument('-v', '--version', action='version', version=VERSION)
-	parser.add_argument('-a', '--album', action='append',
-                        help='adds all songs in the albums for download',
-                        type=int, nargs='+')
-	parser.add_argument('-s', '--song', action='append',
-                        help='add a songs in the albums for download',
-                        type=int, nargs='+')
-	parser.add_argument('-se', '--search',
-                        help='search album or song',
-                        type=str, nargs='+')
-
-	return parser.parse_args()
-
-def set_song_info(filename, info):
-	print info['title']
-	audio = eyed3.load(filename)
-	audio.tag.title = info[u'title']
-	audio.tag.album = info[u'album']
-	audio.tag.artist = info[u'artist']
-	audio.tag.track_num = info[u'track_num']
-	audio.tag.save()
+DEST = dl.get_dest()
 
 def get_song_link(song_id_list):
 	song_list = []
@@ -113,7 +83,7 @@ def download_song(song_link_list, folder):
 				if not chunk:
 					break
 				output.write(chunk)
-		set_song_info(output_file, info)
+		dl.set_song_info(output_file, info)
 		print '------------------------complete--------------------'
 		
 def get_song_list(album_id):
@@ -141,7 +111,7 @@ def search(query):
 		print data
 
 def main():
-	args = parse_arguments()
+	args = dl.parse_arguments(VERSION)
 
 	if args.album:
 		for a in args.album[0]:
