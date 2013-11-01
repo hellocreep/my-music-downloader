@@ -114,7 +114,7 @@ def main():
 	args = dl.parse_arguments(VERSION)
 
 	if args.album:
-		for a in args.album[0]:
+		for a in args.album:
 			album = get_song_list(a)
 			song_list = get_song_link(album['songIdList'])
 			folder = dl.make_folder(album['albumName'])
