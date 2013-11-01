@@ -63,34 +63,6 @@ def get_songs(songids):
 		return r.json()['songs']
 	else:
 		return False
-
-# def download_album(songs, folder):
-# 	for s in songs:
-# 		# if s['linkinfo'].has_key('320'):
-# 		# 	link = s['linkinfo']['320']['songLink']
-# 		# else: 
-# 		# 	link = s['linkinfo']['128']['songLink']
-# 		link = s['mp3Url']
-# 		print '--------------------------downloading----------------'
-# 		print link
-# 		filename = s['name']
-# 		print filename
-# 		info = {
-# 			'title': s['name'],
-# 			'album': s['album']['name'],
-# 			'artist': s['artists'][0]['name'],
-# 			'track_num': songs.index(s)
-# 		}
-# 		output_file = os.path.join(folder, filename+'.mp3')
-# 		r = requests.get(link, headers=HEADERS, stream=True)
-# 		r.encoding = 'utf-8'
-# 		with open(output_file, 'wb') as output:
-# 			for chunk in r.iter_content(1024):
-# 				if not chunk:
-# 					break
-# 				output.write(chunk)
-# 		dl.set_song_info(output_file, info)	
-# 		print '--------------------------complete--------------------'
 		
 def get_album(album_id):
 	ALBUM_GET_PARAM['id'] = album_id
@@ -117,6 +89,7 @@ def main():
 		if songs:
 			folder = dl.make_folder('')
 			download_songs(songs, folder)
+
 	if args.search:
 		search(' '.join(args.search))
 

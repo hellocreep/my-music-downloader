@@ -8,7 +8,7 @@ import dl
 
 import eyed3
 
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 
 URL_PATTERN_ALBUM = 'http://play.baidu.com/data/music/box/album'
 URL_PATTERN_SONG = 'http://play.baidu.com/data/music/songlink'
@@ -27,6 +27,7 @@ ALBUM_GET_PARAM = {
 	'albumId': '',
 	'type': 'album'
 }
+
 SONG_POST_PARAM = {
 	'auto': -1,
 	'bat': -1,
@@ -49,8 +50,6 @@ HEADERS = {
 	'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'
 }
 
-DEST = dl.get_dest()
-
 def get_song_link(song_id_list):
 	song_list = []
 	for s in song_id_list:
@@ -60,7 +59,7 @@ def get_song_link(song_id_list):
 	r = requests.post(URL_PATTERN_SONG, params=SONG_POST_PARAM, headers=HEADERS)
 	return r.json()
 
-def download_song(song_link_list, folder):
+def download_songs(song_link_list, folder):
 	for s in song_link_list['data']['songList']:
 		if s['linkinfo'].has_key('320'):
 			link = s['linkinfo']['320']['songLink']
@@ -69,6 +68,7 @@ def download_song(song_link_list, folder):
 		print '--------------------------downloading----------------'
 		print link
 		filename = s['songName']
+		print filename
 		info = {
 			'title': s['songName'],
 			'album': s['albumName'],
@@ -115,15 +115,16 @@ def main():
 
 	if args.album:
 		for a in args.album[0]:
-			data = get_song_list(a)
-			song_list = get_song_link(data['songIdList'])
-			folder = dl.make_folder(data['albumName'])
-			download_song(song_list, folder)
-	# TODO
+			album = get_song_list(a)
+			song_list = get_song_link(album['songIdList'])
+			folder = dl.make_folder(album['albumName'])
+			download_songs(song_list, folder)
+
 	if args.song:
-		for s in args.song:
-			song_list = get_song_link(s)
-			download_song(song_list, DEST)
+		song_list = get_song_link(args.song)
+		folder = dl.make_folder('')
+		download_songs(song_list, folder)
+
 	if args.search:
 		search(' '.join(args.search))
 
