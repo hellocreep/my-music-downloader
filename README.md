@@ -13,7 +13,7 @@ for baidu music and 163 music
 
 ## Usage
 
-search album or song
+### Search album or song
 
 ```
 163-music -se keywords
@@ -21,7 +21,7 @@ search album or song
 baidu-music -se keywords
 ```
 
-download song
+### Download song
 
 ```
 163-music -s songid
@@ -29,7 +29,7 @@ download song
 baidu-music -s songid
 ```
 
-download album
+### Download album
 
 ```
 163-music -a albumid
