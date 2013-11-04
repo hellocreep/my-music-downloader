@@ -50,6 +50,11 @@ function urlReq(req_url, options, cb) {
 }
 
 function downloadSongs(songs, folder) {
+	if(folder) {
+		fs.mkdir(folder);
+	} else {
+		folder = conf.dest;
+	}
 	songs.forEach(function(obj, index, list) {
 		var link = obj.mp3Url;
 		var info = {
@@ -58,20 +63,22 @@ function downloadSongs(songs, folder) {
 			album: obj.album.name,
 			track_num: index
 		}
-
-		if(folder) {
-			fs.mkdir(folder);
-		} else {
-			folder = conf.dest;
-		}
-
 		var file = fs.createWriteStream(folder + '/' + info.name+'.mp3');	
+		console.log('---------------------------downloading------------------------\n');
+		console.log(link);
+		console.log(info.name);
 
-		urlReq(link, {
-			method: 'GET',
-			headers: HEADERS
-		}, function(body, res) {
-			res.pipe(file);
+		// urlReq(link, {
+		// 	method: 'GET',
+		// 	headers: HEADERS
+		// }, function(body, res) {
+		// 	res.pipe(file);
+		// });
+		http.get(link, function(res) {
+			res.pipe(res);
+			res.on('end', function() {
+				console.log('complete')
+			});
 		});
 	});
 }
