@@ -51,36 +51,67 @@ function urlReq(req_url, options, cb) {
 
 function downloadSongs(songs, folder) {
 	if(folder) {
-		fs.mkdir(folder);
+		fs.exists(folder, function(exists) {
+			if(!exists) {
+				fs.mkdir(folder);
+			}
+		});
 	} else {
 		folder = conf.dest;
 	}
-	songs.forEach(function(obj, index, list) {
-		var link = obj.mp3Url;
+	var index = 0;
+	function downloadSong() {
+		if(!songs[index]) return;
+		var song = songs[index];
+		var link = song.mp3Url;
 		var info = {
-			name: obj.name,
-			artist: obj.artists[0].name,
-			album: obj.album.name,
+			name: song.name,
+			artist: song.artists[0].name,
+			album: song.album.name,
 			track_num: index
 		}
-		var file = fs.createWriteStream(folder + '/' + info.name+'.mp3');	
-		console.log('---------------------------downloading------------------------\n');
-		console.log(link);
-		console.log(info.name);
-
-		// urlReq(link, {
-		// 	method: 'GET',
-		// 	headers: HEADERS
-		// }, function(body, res) {
-		// 	res.pipe(file);
-		// });
 		http.get(link, function(res) {
-			res.pipe(res);
+			console.log('---------------------------downloading------------------------\n');
+			var fileStream = fs.createWriteStream(folder + '/' + info.name+'.mp3');	
+			fileStream.pipe(res);
 			res.on('end', function() {
+				res.end();
 				console.log('complete')
+				index += 1;
+				downloadSong()
 			});
 		});
-	});
+	}
+
+	downloadSong();
+	// songs.forEach(function(obj, index, list) {
+	// 	var link = obj.mp3Url;
+	// 	var info = {
+	// 		name: obj.name,
+	// 		artist: obj.artists[0].name,
+	// 		album: obj.album.name,
+	// 		track_num: index
+	// 	}
+	// 	// var fileStream = fs.createWriteStream(folder + '/' + info.name+'.mp3');	
+	// 	console.log('---------------------------downloading------------------------\n');
+	// 	console.log(link);
+	// 	console.log(info.name);
+
+	// 	// urlReq(link, {
+	// 	// 	method: 'GET',
+	// 	// 	headers: HEADERS
+	// 	// }, function(body, res) {
+	// 	// 	res.pipe(file);
+	// 	// });
+	// 	// http.get(link, function(res) {
+	// 	// 	fileStream.pipe(res);
+	// 	// 	res.on('end', function() {
+	// 	// 		res.end();
+	// 	// 		console.log('complete')
+	// 	// 	});
+	// 	// });
+	// });
+
 }
 
 var commandOption, fileName, args
@@ -106,7 +137,6 @@ if(commandOption === 's') {
 		headers: HEADERS,
 		method: 'GET'
 	}, function(body, res) {
-		console.log(body)
 		downloadSongs(JSON.parse(body).songs);
 	});
 }
